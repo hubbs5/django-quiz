@@ -132,3 +132,10 @@ class ChoiceForm(forms.ModelForm):
   class Meta:
     model = Choice2
     fields = '__all__'
+
+
+class SimpleQuestion(models.Model):
+  question_text = models.CharField(max_length=200)
+
+  def __str__(self) -> str:
+    return self.question_text

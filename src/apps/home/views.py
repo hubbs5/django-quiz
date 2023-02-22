@@ -1,11 +1,35 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib import messages
 
-from .models import Quiz, Question, Choice
+from .models import Quiz, Question, Choice, SimpleQuestion
+from .forms import SimpleQuestionForm
 
+def simple_question_form(request):
+  if request.method == "POST":
+    question_form = SimpleQuestionForm(request.POST)
+    if question_form.is_valid():
+      question_form.save()
+      messages.success(request, ('Submission successfully added!'))
+    else:
+      messages.error(request, 'Error submitting values.')
+
+    return redirect('/')
+
+  question_form = SimpleQuestionForm()
+  questions = SimpleQuestion.objects.all()
+  context = {
+    'question_form': question_form,
+    'questions': questions,
+  }
+  return render(
+    request,
+    template_name='home/simple_question_form.html',
+    context=context)
+      
 
 class IndexView(generic.ListView):
   template_name = "home/index.html"
