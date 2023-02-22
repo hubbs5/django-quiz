@@ -4,15 +4,16 @@ from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
 
-from .models import Question, Choice
+from .models import Quiz, Question, Choice
 
 
 class IndexView(generic.ListView):
   template_name = "home/index.html"
-  context_object_name = "latest_question_list"
+  context_object_name = "quiz_list"
 
   def get_queryset(self):
-    return Question.objects.filter(pub_date__lte=timezone.now()).order_by("pub_date")
+    return Quiz.objects.filter(
+      pub_date__lte=timezone.now()).order_by("-pub_date")
 
 
 class DetailView(generic.DetailView):
