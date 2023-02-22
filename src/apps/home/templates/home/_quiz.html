@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<html>
+    <h1>
+        {{ quiz.quiz_name }}
+    </h1>
+    <!-- {% if quiz.question_list %} -->
+    <!-- <ul> -->
+        {% for question in quiz.question %}
+        <li>
+            <h2>{{ question.question_text }}</h2>
+        </li>
+        {% endfor %}
+        <!-- <li>
+            <form action="{% url 'home:vote' question.id %}" method="post">
+                {% csrf_token %}
+                <fieldset>
+                    <legend><h1>{{ question.question_text }}</h1></legend>
+                    {% if error_message %}
+                        <p><strong>
+                            {{ error_message }}
+                        </strong></p>
+                    {% endif %}
+                    {% for choice in question.choice_set.all %}
+                        <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                        <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+                    {% endfor %}
+                </fieldset>
+                <input type="submit" value="submit">
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+        {% else %}
+    <p>
+        You'd think a quiz would be an easy task for an intern to complete.
+        We literally gave them all the answers!
+    </p>
+    {% endif %} -->
+</html>
+{% endblock %}

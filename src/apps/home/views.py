@@ -16,6 +16,12 @@ class IndexView(generic.ListView):
       pub_date__lte=timezone.now()).order_by("-pub_date")
 
 
+class QuizView(generic.DetailView):
+  # Note: This generally works, but I'm not sure how to get the
+  # quiz scored or submitted at this point
+  model = Quiz
+  template_name = 'home/quiz.html'
+
 class DetailView(generic.DetailView):
   model = Question
   template_name = "home/detail.html"
@@ -24,6 +30,43 @@ class DetailView(generic.DetailView):
 class ResultsView(generic.DetailView):
   model = Question
   template_name = "home/results.html"
+
+
+# def quiz(request, quiz_id):
+#   quiz = get_object_or_404(Quiz, pk=quiz_id)
+#   context = {'quiz': quiz}
+#   return render(request, template_name='home/quiz.html', context=context)
+
+
+def quiz(request, quiz_id):
+  quiz = get_object_or_404(Quiz, pk=quiz_id)
+  if request.method == "POST":
+    print(request.POST)
+    questions = quiz.question_set.all()
+    points = 0
+    for i, q in enumerate(questions):
+      print(f"Question = {request.POST.get(q.question)}")
+      if request.POST.get(q.question) == q.answer:
+        points += 1
+
+    score = points / i * 100
+    context = {
+      'points': points,
+      'score': score,
+      'quiz': quiz,
+    }
+    if request.user.is_authenticated:
+      return render(request, 'home/results.html', context)
+    else:
+      return render(request, 'home/enter-email.html', context)
+  else:
+    context = {'quiz': quiz}
+    return render(request, 'home/quiz.html', context)
+
+
+def contact_form(request, context):
+  pass
+
 
 def home(request):
   latest_question_list = Question.objects.order_by('-pub_date')
