@@ -6,7 +6,7 @@ from datetime import timedelta
 class Question(models.Model):
   question_text = models.CharField(max_length=200)
   pub_date = models.DateTimeField('date published')
-
+  search_fields = ['question_text']
   class Meta:
     app_label = "home"
 
