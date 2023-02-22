@@ -2,7 +2,7 @@ from django.urls import path
 
 from . import views
 
-app_name = "quiz"
+app_name = "quizzes"
 
 urlpatterns = [
   path("", views.IndexView.as_view(), name="index"),
@@ -11,4 +11,5 @@ urlpatterns = [
        name="display_question"),
   path("questions/<int:question_id>/grade/", views.grade_question,
        name="grade_question"),
+  path("add-question", views.add_question, name="add-question"),
 ]

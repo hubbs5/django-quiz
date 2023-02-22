@@ -18,4 +18,4 @@ class addQuestionForm(ModelForm):
 class addContactInfoForm(UserCreationForm):
   class Meta:
     model = User
-    fields = ["email", "name"]
+    fields = ["email", "first_name"]
