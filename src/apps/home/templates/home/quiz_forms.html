@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<html>
+    <h1>
+        {{ quiz.quiz_name }}
+    </h1>
+    {% csrf_token %}
+    {% for question in quiz.question_set.all %}
+    <form action="{% url 'home:vote' quiz.id %}" method="post">
+        <ul>
+            <fieldset>
+                <legend><h2>
+                    {{ question.question_text }}
+                </h2></legend>
+                {% for choice in question.choice_set.all %}
+                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                    <label for="choice{{ forloop.counter }}">
+                        {{ choice.choice_text }}
+                    </label><br>
+                    {% endfor %}
+            </fieldset>
+        </ul>
+    </form>
+    {% endfor %}
+    <br>
+    <input type="submit" value="Submit">
+</html>
+{% endblock %}

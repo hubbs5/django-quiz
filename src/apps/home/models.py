@@ -135,7 +135,14 @@ class ChoiceForm(forms.ModelForm):
 
 
 class SimpleQuestion(models.Model):
+  title = models.CharField(max_length=200)
   question_text = models.CharField(max_length=200)
+  answers = models.ManyToManyField(Choice)
 
   def __str__(self) -> str:
     return self.question_text
+
+
+class SimpleChoice(models.Model):
+  simple_question = models.ForeignKey(SimpleQuestion,
+                                      on_delete=models.CASCADE)

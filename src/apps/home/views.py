@@ -6,9 +6,21 @@ from django.utils import timezone
 from django.contrib import messages
 
 from .models import Quiz, Question, Choice, SimpleQuestion
-from .forms import SimpleQuestionForm
+from .forms import SimpleQuestionForm, QuestionForm
 
-def simple_question_form(request):
+
+def simple_question_form(request, quiz_id):
+  quiz = get_object_or_404(Quiz, pk=quiz_id)
+  question_form = QuestionForm()
+  context = {
+    'quiz': quiz
+  }
+  return render(request,
+                template_name='home/quiz_forms.html', 
+                context=context)
+
+
+def _simple_question_form(request):
   if request.method == "POST":
     question_form = SimpleQuestionForm(request.POST)
     if question_form.is_valid():

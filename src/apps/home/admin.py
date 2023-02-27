@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from .models import Quiz, Question, Choice, QuizForm, QuestionForm
+from .models import (Quiz, Question, Choice, QuizForm, QuestionForm,
+                     SimpleQuestion)
 
 class ChoiceInline(admin.TabularInline):
   model = Choice
@@ -47,7 +48,16 @@ class QuestionAdmin(admin.ModelAdmin):
   ]
   inlines = [ChoiceInline]
   list_display = ('question_text', 'question_completions', 'average_score')
+
+
+class SimpleQuestionAdmin(admin.ModelAdmin):
+  fieldsets = [
+    (None, {"fields": ["title", 
+                       'question_text', 
+                       'answers']}),
+  ]
   
 admin.site.register(Quiz, QuizAdmin)
-# admin.site.register(Question, QuestionAdmin)
-admin.site.register(QuizForm)
+admin.site.register(Question, QuestionAdmin)
+# admin.site.register(QuizForm)
+admin.site.register(SimpleQuestion, SimpleQuestionAdmin)
