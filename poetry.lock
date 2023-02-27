@@ -27,6 +27,17 @@ argon2 = ["argon2-cffi (>=19.1.0)"]
 bcrypt = ["bcrypt"]
 
 [[package]]
+name = "django-crispy-forms"
+version = "2.0"
+description = "Best way to have Django DRY forms"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+django = ">=3.2"
+
+[[package]]
 name = "python-decouple"
 version = "3.7"
 description = "Strict separation of settings from code."
@@ -64,11 +75,12 @@ brotli = ["brotli"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "3809b1e055e2a24b46b06493c6328746d475b745b0cf9a1f9610eb3ac4875c55"
+content-hash = "9d612f5f4d927f34eff9dc94de681d9e71f4682babf3d9350b3b982df2514856"
 
 [metadata.files]
 asgiref = []
 django = []
+django-crispy-forms = []
 python-decouple = []
 sqlparse = []
 tzdata = []

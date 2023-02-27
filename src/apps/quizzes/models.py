@@ -1,37 +1,38 @@
 from django.db import models
-from django.contrib.postgres import fields
-
 
 class Quiz(models.Model):
-  name = models.CharField(max_length=100)
+  quiz_name = models.CharField(max_length=200)
+  quiz_attempts = models.IntegerField(default=0)
+  average_score = models.FloatField(default=0)
 
-  def __str__(self):
-    return self.name
+  class Meta:
+    app_label = 'quizzes'
+
+  def __str__(self) -> str:
+    return self.quiz_name
 
 
 class Question(models.Model):
   quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-  prompt = models.CharField(max_length=200)
-
-  def __str__(self):
-    return self.prompt
-
-
-class Answer(models.Model):
-  question = models.OneToOneField(Question, on_delete=models.CASCADE)
-  correct_answer = models.CharField(max_length=200)
+  question_text = models.CharField(max_length=200)
+  question_completions = models.IntegerField(default=0)
+  average_score = models.FloatField(default=0)
 
   class Meta:
-    abstract = True
+    app_label = 'quizzes'
+
+  def __str__(self) -> str:
+    return self.question_text
 
 
+class Choice(models.Model):
+  question = models.ForeignKey(Question, on_delete=models.CASCADE)
+  choice_text = models.CharField(max_length=200)
+  selections = models.IntegerField(default=0)
+  correct = models.BooleanField(default=False)
 
+  class Meta:
+    app_label = 'quizzes'
 
-# class MultipleChoiceAnswer(Answer):
-#   choices = fields.ArrayField(models.CharField(max_length=200, blank=True))
-
-#   def __str__(self):
-#     return f"{self.correct_answer} from {self.choices}"
-
-#   def is_correct(self, user_answer):
-#     return user_answer == self.correct_answer
+  def __str__(self) -> str:
+    return self.choice_text
