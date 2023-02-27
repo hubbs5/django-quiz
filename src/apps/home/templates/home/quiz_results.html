@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<h1>{{ quiz.quiz_name }}</h1>
+
+<ul>
+    <li>Total Points: {{ points }}</li>
+    <li>Final Score: {{ score }}</li>
+</ul>
+
+<a href="{% url 'home:detail' question.id %}">Vote again?</a>
+
+
+{% endblock %}

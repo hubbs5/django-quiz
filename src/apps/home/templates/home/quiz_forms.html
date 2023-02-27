@@ -6,9 +6,9 @@
     <h1>
         {{ quiz.quiz_name }}
     </h1>
-    {% csrf_token %}
     {% for question in quiz.question_set.all %}
-    <form action="{% url 'home:vote' quiz.id %}" method="post">
+    <form action="{% url 'home:grade' quiz.id %}" method="post">
+        {% csrf_token %}
         <ul>
             <fieldset>
                 <legend><h2>
@@ -20,11 +20,12 @@
                         {{ choice.choice_text }}
                     </label><br>
                     {% endfor %}
+                    <br>
+                    <input type="submit" value="Submit">
             </fieldset>
         </ul>
     </form>
     {% endfor %}
-    <br>
-    <input type="submit" value="Submit">
+
 </html>
 {% endblock %}

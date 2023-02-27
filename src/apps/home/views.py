@@ -11,10 +11,29 @@ from .forms import SimpleQuestionForm, QuestionForm
 
 def simple_question_form(request, quiz_id):
   quiz = get_object_or_404(Quiz, pk=quiz_id)
-  question_form = QuestionForm()
   context = {
     'quiz': quiz
   }
+  if request.method == "POST":
+    questions = quiz.question_set.all()
+    points = 0
+    for i, q in enumerate(questions):
+      print(x)
+      print(f"Question = {request.POST.get(q.question)}")
+      if request.POST.get(q.question) == q.answer:
+        points += 1
+
+    score = points / i * 100
+    context = {
+      'quiz': quiz,
+      'points': points,
+      'score': score,
+    }
+    return render(
+      request,
+      template_name='home/quiz_results.html',
+      context=context
+    )
   return render(request,
                 template_name='home/quiz_forms.html', 
                 context=context)
@@ -65,7 +84,12 @@ class DetailView(generic.DetailView):
 
 class ResultsView(generic.DetailView):
   model = Question
-  template_name = "home/results.html"
+  template_name = "home/quiz_results.html"
+
+
+class QuizResultsView(generic.DeleteView):
+  model = Question
+  template_name = 'home/quiz_results.html'
 
 
 # def quiz(request, quiz_id):
@@ -120,6 +144,21 @@ def results(request, question_id):
   question = get_object_or_404(Question, pk=question_id)
   context = {"question": question}
   return render(request, 'home/results.html', context)
+
+
+def grade(request, question_id):
+  question = get_object_or_404(Question, pk=question_id)
+  try:
+    selected_choice = question.choice_set.get(pk=request.POST['choice'])
+  except (KeyError, Choice.DoesNotExist):
+    context = {'question': question,
+               'error_message': "You didn't make a selection."}
+    return render(request, 'home/detail.html', context=context)
+  else:
+    selected_choice.selections += 1
+    selected_choice.save()
+    return HttpResponseRedirect(reverse('home:results', args=(question.id,)))
+      
 
 
 def vote(request, question_id):
