@@ -7,7 +7,7 @@
         {{ quiz.quiz_name }}
     </h1>
     {% for question in quiz.question_set.all %}
-    <form action="{% url 'home:grade' quiz.id %}" method="post">
+    <form action="{% url 'quizzes:grade' quiz.id %}" method="post">
         {% csrf_token %}
         <ul>
             <fieldset>

@@ -28,6 +28,12 @@ class ResultsView(generic.DetailView):
   template_name = 'quizzes/results.html'
 
 
+def results(request, question_id):
+  question = get_object_or_404(Question, pk=question_id)
+  context = {'question': question}
+  return render(request, 'quizzes/results.html', context=context)
+
+
 def grade(request, question_id):
   question = get_object_or_404(Question, pk=question_id)
   try:
@@ -39,5 +45,9 @@ def grade(request, question_id):
   else:
     selected_choice.selections += 1
     selected_choice.save()
-    return HttpResponseRedirect(
-      reverse('quizzes:results', args=(question.id,)))
+    context = {
+      'choice': selected_choice
+    }
+    return render(request, 'quizzes/detail.html', context=context)
+    # return HttpResponseRedirect(
+    #   reverse('quizzes:results', args=(question.id,)))

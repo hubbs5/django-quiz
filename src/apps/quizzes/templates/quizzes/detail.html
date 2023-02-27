@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-<form action="{% url 'home:vote' question.id %}" method="post">
+<form action="{% url 'quizzes:grade' question.id %}" method="post">
     {% csrf_token %}
     <fieldset>
         <legend><h1>{{ question.question_text }}</h1></legend>
@@ -16,6 +16,6 @@
             <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
         {% endfor %}
     </fieldset>
-    <input type="submit" value="Vote">
+    <input type="submit" value="Submit">
 </form>
 {% endblock %}
