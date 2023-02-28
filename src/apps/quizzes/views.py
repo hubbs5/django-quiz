@@ -67,7 +67,7 @@ def grade(request, quiz_id):
     points, unanswered = 0, 0
     for i, q in enumerate(questions):
       try:
-        selected_choice = q.choice_set.get(pk=request.POST['choice'])
+        selected_choice = q.choice_set.get(pk=request.POST[f'choice{q.id}'])
         points += 1 if selected_choice.correct else 0
       except:
         unanswered += 1

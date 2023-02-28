@@ -10,20 +10,18 @@
         {% csrf_token %}
         {% for question in quiz.question_set.all %}
         <ul>
-            <!-- Is fieldset causing the problem of only being able to select on value at
-            a time? -->
             <fieldset> 
                 <legend><h2>
                     {{ question.question_text }}
                 </h2></legend>
                 {% for choice in question.choice_set.all %}
-                    <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                    <input type="radio" name="choice{{ question.id }}" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
                     <label for="choice{{ forloop.counter }}">
                         {{ choice.choice_text }}
                     </label><br>
+                {% endfor %}
             </fieldset>
         </ul>
-        {% endfor %}
         {% endfor %}
         <br>
         <input type="submit" value="Submit">
