@@ -10,4 +10,5 @@ urlpatterns = [
   path('<int:question_id>/', views.DetailView.as_view(), name='detail'),
   path('<int:question_id>/results/', views.results, name='results'),
   path('<int:quiz_id>/grade/', views.grade, name='grade'),
+  path('<int:quiz_id>/submission/', views.submission, name='submission')
 ]

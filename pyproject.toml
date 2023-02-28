@@ -11,6 +11,8 @@ Django = "^4.1.7"
 python-decouple = "^3.7"
 whitenoise = "^6.3.0"
 django-crispy-forms = "^2.0"
+mailchimp-marketing = "^3.0.80"
+django-allauth = "^0.52.0"
 
 [tool.poetry.dev-dependencies]
 

@@ -9,12 +9,22 @@
     {{ error_message }}
 </strong></h3>
 {% endif %}
-<ul>
+<form action="{% url 'quizzes:submission' quiz.id %}" method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="points-{{ session }}" id="points-{{ session }}" value=" {{ points }}">
+    <input type="hidden" name="score-{{ session }}" id="score-{{ session }}" value=" {{ score }}">
+    <div class="form-actions">
+        <button type="submit">Get my results!</button>
+    </div>
+</form>
+<!-- Add option if authenticated -->
+<!-- <ul>
     <li>Total Points: {{ points }}</li>
     <li>Final Score: {{ score }}</li>
     <li>Unanswered: {{ unanswered }}</li>
 </ul>
-
-<a href="{% url 'quizzes:quiz' quiz.id %}">Try again?</a>
+-->
+<!-- <a href="{% url 'quizzes:quiz' quiz.id %}">Try again?</a> -->
 
 {% endblock %}
