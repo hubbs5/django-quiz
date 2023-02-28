@@ -12,9 +12,9 @@
 <ul>
     <li>Total Points: {{ points }}</li>
     <li>Final Score: {{ score }}</li>
+    <li>Unanswered: {{ unanswered }}</li>
 </ul>
 
-<a href="{% url 'quizzes:quiz' question.id %}">Try again?</a>
-
+<a href="{% url 'quizzes:quiz' quiz.id %}">Try again?</a>
 
 {% endblock %}

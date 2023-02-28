@@ -34,7 +34,7 @@ def results(request, question_id):
   return render(request, 'quizzes/results.html', context=context)
 
 
-def grade(request, question_id):
+def _grade(request, question_id):
   # quiz = get_object_or_404(Quiz, pk=quiz_id)
   question = get_object_or_404(Question, pk=question_id)
   num_questions = 1
@@ -58,21 +58,30 @@ def grade(request, question_id):
     return render(request, 'quizzes/results.html', context=context)
 
 
-def grade_quiz(request, quiz_id):
+def grade(request, quiz_id):
   quiz = get_object_or_404(Quiz, pk=quiz_id)
   if request.method == 'POST':
     questions = quiz.question_set.all()
-    points = 0
+    print("Grading qustions")
+    print(request.POST)
+    points, unanswered = 0, 0
     for i, q in enumerate(questions):
-      # TODO: get individual choices if choice.correct = True then +1 to points
-      pass
+      try:
+        selected_choice = q.choice_set.get(pk=request.POST[f'choice{q.id}'])
+        points += 1 if selected_choice.correct else 0
+      except:
+        unanswered += 1
+        print(f"Choice not found {q}")
 
     score = points / (i + 1)
 
     context = {
       'quiz': quiz,
       'points': points,
-      'score': score
+      'score': score,
+      'unanswered': unanswered,
     }
 
     return render(request, 'quizzes/results.html', context=context)
+
+  return render(request, 'quizzes/test.html')
