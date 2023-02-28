@@ -6,13 +6,11 @@
     <h1>
         {{ quiz.quiz_name }}
     </h1>
+    {% for question in quiz.question_set.all %}
     <form action="{% url 'quizzes:grade' quiz.id %}" method="post">
         {% csrf_token %}
-        {% for question in quiz.question_set.all %}
         <ul>
-            <!-- Is fieldset causing the problem of only being able to select on value at
-            a time? -->
-            <fieldset> 
+            <fieldset>
                 <legend><h2>
                     {{ question.question_text }}
                 </h2></legend>
@@ -21,12 +19,13 @@
                     <label for="choice{{ forloop.counter }}">
                         {{ choice.choice_text }}
                     </label><br>
+                    {% endfor %}
+                    <br>
+                    <input type="submit" value="Submit">
             </fieldset>
         </ul>
-        {% endfor %}
-        {% endfor %}
-        <br>
-        <input type="submit" value="Submit">
     </form>
+    {% endfor %}
+
 </html>
 {% endblock %}
