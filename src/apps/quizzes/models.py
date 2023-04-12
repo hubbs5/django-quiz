@@ -1,15 +1,25 @@
 from django.db import models
+from django.utils.text import slugify
 
 class Quiz(models.Model):
   quiz_name = models.CharField(max_length=200)
+  slug = models.CharField(max_length=200, blank=True, unique=True)
+  quiz_description = models.CharField(max_length=500,
+                                      default="None")
   quiz_attempts = models.IntegerField(default=0)
   average_score = models.FloatField(default=0)
+  active = models.BooleanField(default=False)
 
   class Meta:
     app_label = 'quizzes'
 
   def __str__(self) -> str:
     return self.quiz_name
+
+  def save(self, *args, **kwargs):
+    if not self.slug:
+      self.slug = slugify(self.quiz_name)
+    super().save(*args, **kwargs)
 
 
 class Question(models.Model):
@@ -36,3 +46,17 @@ class Choice(models.Model):
 
   def __str__(self) -> str:
     return self.choice_text
+
+
+class Rubric(models.Model):
+  quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+  display_description = models.CharField(max_length=200)
+  minimum_score = models.FloatField(default=0)
+  tag = models.CharField(max_length=200, default="")
+  count = models.IntegerField(default=0)
+
+  class Meta:
+    app_label = 'quizzes'
+
+  def __str__(self) -> str:
+    return f"{self.minimum_score} is required for {self.tag}"

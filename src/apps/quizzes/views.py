@@ -70,7 +70,7 @@ def submission(request, quiz_id):
       print("Valid form received")
       quiz = get_object_or_404(Quiz, pk=quiz_id)
       add_mailchimp_user(request.POST, LIST_ID, get_quiz_tags(quiz))
-      # send_results_email(request.POST['score'])
+      # send_results_email(**request.POST)
       context = {"quiz": quiz}
       return render(request, 'quizzes/submission.html', context)
   else:
