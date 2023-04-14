@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Quiz, Question, Choice
+from .models import Quiz, Question, Choice, Rubric
 
 
 class QuestionInline(admin.TabularInline):
@@ -12,14 +12,23 @@ class ChoiceInline(admin.TabularInline):
   model = Choice
   extra = 3
 
+
+class RubricInline(admin.TabularInline):
+  model = Rubric
+  extra = 3
+
 class QuizAdmin(admin.ModelAdmin):
   fieldsets = [
-    (None, {'fields': ['quiz_name']}),
+    (None, {'fields': ['quiz_name',
+                       'quiz_description',
+                       'active',
+                       'slug']}),
     ('Results', {'fields': ['quiz_attempts',
                             'average_score'],
                  'classes': ['collapse']})
   ]
-  inlines = [QuestionInline]
+  inlines = [QuestionInline,
+             RubricInline]
   list_display = ('quiz_name', 'quiz_attempts', 'average_score')
 
 

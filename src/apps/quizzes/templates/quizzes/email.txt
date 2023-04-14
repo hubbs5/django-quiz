@@ -1,0 +1,7 @@
+Hello {{ first_name }} {{ last_name }}!
+
+Here are your quiz results!
+
+{{ display_description }}
+
+Final Score: {{ score }} points

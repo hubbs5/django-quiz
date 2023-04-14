@@ -6,9 +6,7 @@ app_name = 'quizzes'
 
 urlpatterns = [
   path('', views.IndexView.as_view(), name='index'),
-  path('<int:pk>/', views.QuizView.as_view(), name='quiz'),
-  path('<int:question_id>/', views.DetailView.as_view(), name='detail'),
-  path('<int:question_id>/results/', views.results, name='results'),
-  path('<int:quiz_id>/grade/', views.grade, name='grade'),
-  path('<int:quiz_id>/submission/', views.submission, name='submission')
+  path('<slug:quiz_slug>/', views.QuizView.as_view(), name='quiz'),
+  path('<slug:quiz_slug>/grade/', views.grade, name='grade'),
+  path('<slug:quiz_slug>/submit/', views.submit, name='submit'),
 ]

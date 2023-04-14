@@ -1,7 +1,3 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
 <html>
     <h1>
         Welcome to my quiz landing page!
@@ -9,11 +5,11 @@
     {% if quiz_list %}
     <ul>
         {% for quiz in quiz_list %}
-        <li><a href="{% url 'quizzes:detail' quiz.id %}">{{ quiz.quiz_name }}</a></li>
-    {% endfor %}
+        <li>
+            <a href="{% url 'quizzes:quiz' quiz.slug %}">{{ quiz.quiz_name }}</a>
+            <p>{{ quiz.quiz_description }}</p>
+        </li>
+        {% endfor %}
     </ul>
-    {% else %}
-    <p>No quizzes are available. Check back soon!</p>
     {% endif %}
 </html>
-{% endblock %}

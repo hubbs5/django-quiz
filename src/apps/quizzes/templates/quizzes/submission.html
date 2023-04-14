@@ -1,8 +1,0 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
-<h1>{{ quiz.quiz_name }}</h1>
-<h2>Check your inbox for the results!</h2>
-<a href="{% url 'quizzes:quiz' quiz.id %}">Try again?</a>
-{% endblock %}

@@ -3,7 +3,7 @@ from django.utils.text import slugify
 
 class Quiz(models.Model):
   quiz_name = models.CharField(max_length=200)
-  slug = models.CharField(max_length=200, blank=True, unique=True)
+  slug = models.SlugField(max_length=100, blank=True) #, unique=True) #add this once slugs have been created
   quiz_description = models.CharField(max_length=500,
                                       default="None")
   quiz_attempts = models.IntegerField(default=0)
@@ -34,12 +34,11 @@ class Question(models.Model):
   def __str__(self) -> str:
     return self.question_text
 
-
 class Choice(models.Model):
   question = models.ForeignKey(Question, on_delete=models.CASCADE)
   choice_text = models.CharField(max_length=200)
   selections = models.IntegerField(default=0)
-  correct = models.BooleanField(default=False)
+  points = models.IntegerField(default=0)
 
   class Meta:
     app_label = 'quizzes'

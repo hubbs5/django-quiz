@@ -1,111 +1,85 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.shortcuts import render, get_object_or_404
 from django.views import generic
-from django.core.mail import send_mail, BadHeaderError
-from decouple import config
 
-from .models import Quiz, Question, Choice
+from .models import Quiz, Question, Choice, Rubric
 from .forms import QuizSubmissionForm
-from .emails import add_mailchimp_user, get_quiz_tags
 
-LIST_ID = config("MAILCHIMP_SUBSCRIBER_LIST_ID")
+from . import emails
 class IndexView(generic.ListView):
   template_name = 'quizzes/index.html'
   context_object_name = 'quiz_list'
 
   def get_queryset(self):
-    return Quiz.objects.all()
+    return Quiz.objects.filter(active=True)
+
 
 class QuizView(generic.DetailView):
   model = Quiz
   template_name = 'quizzes/quiz.html'
+  slug_field = 'slug'
+  slug_url_kwarg = 'quiz_slug'
 
 
-class DetailView(generic.DetailView):
-  model = Quiz
-  template_name = 'quizzes/detail.html'
-
-
-class ResultsView(generic.DetailView):
-  model = Quiz
-  template_name = 'quizzes/results.html'
-
-
-def results(request, question_id):
-  question = get_object_or_404(Question, pk=question_id)
-  context = {'question': question}
-  return render(request, 'quizzes/results.html', context=context)
-
-
-def _grade(request, question_id):
-  # quiz = get_object_or_404(Quiz, pk=quiz_id)
-  question = get_object_or_404(Question, pk=question_id)
-  num_questions = 1
-  try:
-    selected_choice = question.choice_set.get(pk=request.POST['choice'])
-  except (KeyError, Choice.DoesNotExist):
-    context = {'question': question,
-               'error_message': "You didn't make a selection."}
-    return render(request, 'quizzes/results.html', context=context)
-  else:
-    selected_choice.selections += 1
-    selected_choice.save()
-    points = 1 if selected_choice.correct else 0
-    score = f'{points / num_questions * 100:.1f}%' # Only checks one question at a time
-    context = {
-      'question': question,
-      'choice': selected_choice,
-      'points': points,
-      'score': score,
-    }
-    return render(request, 'quizzes/results.html', context=context)
-
-
-def submission(request, quiz_id):
-  print(request.POST)
-  if request.method == 'POST':
-   form = QuizSubmissionForm(request.POST)
-   if form.is_valid():
-      print("Valid form received")
-      quiz = get_object_or_404(Quiz, pk=quiz_id)
-      add_mailchimp_user(request.POST, LIST_ID, get_quiz_tags(quiz))
-      # send_results_email(**request.POST)
-      context = {"quiz": quiz}
-      return render(request, 'quizzes/submission.html', context)
-  else:
-    form = QuizSubmissionForm()
-  return render(request, 'quizzes/index.html')
-
-
-def grade(request, quiz_id):
-  quiz = get_object_or_404(Quiz, pk=quiz_id)
+def grade(request, quiz_slug):
+  # Grades the quiz, stores results in context, and redirects to the 
+  # submission page.
+  quiz = get_object_or_404(Quiz, slug=quiz_slug)
   form = QuizSubmissionForm(request.POST)
-  session = request.session.session_key
+  context = {'quiz': quiz,
+             'form': form}
   if request.method == 'POST':
     questions = quiz.question_set.all()
-    print("Grading qustions")
-    print(request.POST)
-    points, unanswered = 0, 0
-    for i, q in enumerate(questions):
+    score, unanswered = 0, 0
+    for q in questions:
       try:
-        selected_choice = q.choice_set.get(pk=request.POST[f'choice{q.id}'])
-        points += 1 if selected_choice.correct else 0
-      except:
+        pk = request.POST[f'question-{q.id}']
+        selected_choice = q.choice_set.get(pk=pk)
+        score += selected_choice.points
+        selected_choice.selections += 1
+        selected_choice.save()
+        q.question_completions += 1
+        q.average_score = q.average_score + (selected_choice.points - q.average_score) / q.question_completions
+        q.save()
+      except KeyError:
         unanswered += 1
-        print(f"Choice not found {q}")
 
-    score = points / (i + 1)
+    quiz.quiz_attempts += 1
+    quiz.average_score = quiz.average_score + (score - quiz.average_score) / quiz.quiz_attempts
+    quiz.save()
 
-    context = {
-      'quiz': quiz,
-      'points': points,
-      'score': score,
-      'unanswered': unanswered,
-      'session': session,
-      'form': form,
-    }
+    rubric = _apply_rubric(quiz, score)
+    context.update(rubric)
+    context['score'] = score
+    return render(request, 'quizzes/submit.html', context)
 
-    return render(request, 'quizzes/results.html', context=context)
+  return render(request, 'quizzes/quiz.html', context)
 
-  return render(request, 'quizzes/results.html')
+
+def submit(request, quiz_slug):
+  context = {}
+  if request.method == 'POST':
+    quiz = get_object_or_404(Quiz, slug=quiz_slug)
+    form = QuizSubmissionForm(request.POST)
+    context['quiz'] = quiz
+    if form.is_valid():
+      emails.add_user_to_mailchimp(request.POST)
+      emails.send_results_email(request.POST)
+      return render(request, 'quizzes/success.html', context)
+
+  context['form'] = QuizSubmissionForm(request.POST)
+  return render(request, 'quizzes/submit.html', context)
+
+
+def _apply_rubric(quiz, score):
+  # Returns a dictionary of the rubric tag and description for the given
+  # quiz and points.
+  rubric = quiz.rubric_set.filter(quiz=quiz).order_by('-minimum_score')
+  for r in rubric:
+    if score >= r.minimum_score:
+      r.count += 1
+      r.save()
+      return {'tag': r.tag,
+              'display_description': r.display_description}
+  # Return defaults
+  return {'tag': quiz.quiz_name,
+          'display_description': 'Thanks for taking the quiz!'}

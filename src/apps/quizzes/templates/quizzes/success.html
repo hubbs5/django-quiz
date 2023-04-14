@@ -1,8 +1,9 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block content %}
-
-<h1>Placeholder page reached</h1>
-
-{% endblock %}
+<html>
+    <h1>
+        Congrats! You just completed the {{ quiz.quiz_name }} quiz!
+    </h1>
+    <h2>
+        Check your inbox for your results!
+    </h2>
+    <a href="{% url 'quizzes:quiz' quiz.slug %}">Try again if you think you can do better!</a>
+</html>

@@ -1,0 +1,15 @@
+<html>
+    <h1>
+        Enter your email and have the results sent to you!
+    </h1>
+    <form action="{% url 'quizzes:submit' quiz.slug %}" method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-action">
+            <input type="hidden" name="score" value="{{ score }}">
+            <input type="hidden" name="tag" value="{{ tag }}">
+            <input type="hidden" name="display_description" value="{{ display_description }}">
+            <button type="submit">Get my results!</button>
+        </div>
+    </form>
+</html>
